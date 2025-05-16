@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres_cc
+    image: postgres:15.3
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: CleverCashDB
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: 'Europe/Berlin'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - spring-cloud-network
+
+  pgadmin:
+    container_name: pgadmin_cc
+    image: dpage/pgadmin4:latest
+    restart: always
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      TZ: 'Europe/Berlin'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - spring-cloud-network
+
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
+    networks:
+      - spring-cloud-network
+    environment:
+      RUN_MODE: PRODUCTION
+      PMA_HOST: 'postgres'
+
+volumes:
+  postgres-data:
+  pgadmin-data:
+
+networks:
+  spring-cloud-network:
+    driver: bridge
