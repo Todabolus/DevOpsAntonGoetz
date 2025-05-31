@@ -1,0 +1,15 @@
+package de.fherfurt.clevercash.api;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+@SpringBootApplication (scanBasePackages = "de.fherfurt.clevercash")
+@EnableJpaRepositories (basePackages = "de.fherfurt.clevercash.storage")
+@EntityScan ("de.fherfurt.clevercash.storage")
+public class Main {
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
+    }
+}

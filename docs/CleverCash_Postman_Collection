@@ -1,0 +1,806 @@
+{
+	"info": {
+		"_postman_id": "be728077-bf58-462b-97f5-4c440d4ddb63",
+		"name": "CleverCash - Collection",
+		"description": "Postman Collection zum testen der REST-Schnittstellen des Projektes CleverCash.\n\nDie Reihenfolge der Ordner ist einzuhalten, wichtig ist zu beginn über die Registrierung einen User zu erstellen, da der AccessToken für weitere Schritte benötigt wird.\n\nWeitere Informationen zu den Testdaten sind in der Dokumentation hinterlegt.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33745384",
+		"_collection_link": "https://warped-station-123826.postman.co/workspace/CleverCash~4b8d6a44-52fa-4abf-8e82-f0f5108fc9e9/collection/33745384-be728077-bf58-462b-97f5-4c440d4ddb63?action=share&source=collection_link&creator=33745384"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"firstName\": \"Max\",\r\n\"lastName\": \"Mustermann\",\r\n\"email\": \"MaxMustermann@gmail.com\",\r\n\"birthDate\": \"2000-01-01\",\r\n\"password\": \"Test1234!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/auth/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate(Login)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"email\": \"MaxMustermann@gmail.com\",\r\n\"password\": \"Test1234!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/auth/authenticate"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NjU0MCwiZXhwIjoxNzIyOTUyOTQwfQ.FUz7XN3pkOxTX36kjVnfpLveOJ4srZyoapMODNq6he4"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "GetAllUsers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NjU0MCwiZXhwIjoxNzIyOTUyOTQwfQ.FUz7XN3pkOxTX36kjVnfpLveOJ4srZyoapMODNq6he4"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "GetUserByID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NjU0MCwiZXhwIjoxNzIyOTUyOTQwfQ.FUz7XN3pkOxTX36kjVnfpLveOJ4srZyoapMODNq6he4"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "GetUserByEmail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NjU0MCwiZXhwIjoxNzIyOTUyOTQwfQ.FUz7XN3pkOxTX36kjVnfpLveOJ4srZyoapMODNq6he4"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/users?email=MaxMustermann@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "MaxMustermann@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NjU0MCwiZXhwIjoxNzIyOTUyOTQwfQ.FUz7XN3pkOxTX36kjVnfpLveOJ4srZyoapMODNq6he4"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Max\",\r\n    \"lastName\": \"Mustermann\",\r\n    \"email\": \"MaxMustermann@gmail.com\",\r\n    \"birthDate\": \"1990-01-01\",\r\n    \"password\": \"Test1234!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteUser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImlhdCI6MTcyMDc2NjU3MSwiZXhwIjoxNzIwODUyOTcxfQ.-QDMOWno2gmql2biLMZU2lGbyo1EyWefDAT__xn8iZI"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Address",
+			"item": [
+				{
+					"name": "addUserAddress",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"postalCode\": \"99999\",\r\n    \"country\": \"TestLand\",\r\n    \"city\": \"TestStadt\",\r\n    \"street\": \"TestStrasse\",\r\n    \"streetNumber\": \"1\",\r\n    \"state\": \"TestStaat\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/address"
+					},
+					"response": []
+				},
+				{
+					"name": "findUserAddress",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"postalCode\": \"99999\",\r\n    \"country\": \"TestLand\",\r\n    \"city\": \"TestStadt\",\r\n    \"street\": \"TestStrasse\",\r\n    \"streetNumber\": \"1\",\r\n    \"state\": \"TestStaat\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/address"
+					},
+					"response": []
+				},
+				{
+					"name": "updateUserAddress",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"postalCode\": \"11111\",\r\n    \"country\": \"NeuerTestLand\",\r\n    \"city\": \"NeueTestStadt\",\r\n    \"street\": \"NeueTestStrasse\",\r\n    \"streetNumber\": \"1\",\r\n    \"state\": \"NeuerTestStaat\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/address"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUserAddress",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/address"
+					},
+					"response": []
+				}
+			],
+			"description": "Wenn man das Projekt neu afusetzt kann dieser Init Folder über run gestartet werden und es werden automatisch Testdaten generiert mit welchen man das weitere Vorgehen testen kann!\n\nJe nach Datum, wann man dieses Projekt testen möchte, muss im Saving und Installment das StartDate Datum angepasst werden, damit die Validierung intern nicht fehlschlägt!"
+		},
+		{
+			"name": "BankAccount",
+			"item": [
+				{
+					"name": "CreateBankAccount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TestBankAccount\",\r\n    \"balance\": \"10000\",\r\n    \"dailyLimit\": \"1000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllBankAccounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts"
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleBankAccount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1"
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateBankAccount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"NewName\",\r\n    \"balance\": \"10000\",\r\n    \"dailyLimit\": \"1000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteBankAccount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"NewName\",\r\n    \"balance\": \"10000\",\r\n    \"dailyLimit\": \"1000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "addTransaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 800,\r\n    \"description\": \"Laptop\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "findTransactionsNoParams",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "findTransactionsParams",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Test\",\r\n    \"lastName\": \"User\",\r\n    \"email\": \"testUser@gmail.com\",\r\n    \"birthDate\": \"2000-01-01\",\r\n    \"password\": \"TestUser1234!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/users/1/bankAccounts/1/transactions?transactionType=PAYMENT&description=Laptop",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"bankAccounts",
+								"1",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "transactionType",
+									"value": "PAYMENT"
+								},
+								{
+									"key": "description",
+									"value": "Laptop"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findTransactionByID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Test\",\r\n    \"lastName\": \"User\",\r\n    \"email\": \"testUser@gmail.com\",\r\n    \"birthDate\": \"2000-01-01\",\r\n    \"password\": \"TestUser1234!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/transactions/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Saving",
+			"item": [
+				{
+					"name": "addSaving",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"name\": \"TestSaving\",\r\n\"amount\": \"500\",\r\n\"durationInMonths\": 3,\r\n\"startDate\": \"2025-06-01\",\r\n\"description\": \"SmartPhone\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/savings"
+					},
+					"response": []
+				},
+				{
+					"name": "findSavingsNoParams",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/savings"
+					},
+					"response": []
+				},
+				{
+					"name": "findSavingParams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/users/1/bankAccounts/1/savings?description=Test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"bankAccounts",
+								"1",
+								"savings"
+							],
+							"query": [
+								{
+									"key": "description",
+									"value": "Test"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findSavingByID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/savings/1"
+					},
+					"response": []
+				},
+				{
+					"name": "findActiveSaving",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/savings/activeSaving"
+					},
+					"response": []
+				},
+				{
+					"name": "removeActiveSaving",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/savings/activeSaving"
+					},
+					"response": []
+				},
+				{
+					"name": "removeSaving",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/savings/1"
+					},
+					"response": []
+				},
+				{
+					"name": "transferFromSavingToBalance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/users/1/bankAccounts/1/savings/credit?amountInt=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"bankAccounts",
+								"1",
+								"savings",
+								"credit"
+							],
+							"query": [
+								{
+									"key": "amountInt",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Installment",
+			"item": [
+				{
+					"name": "addInstallment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test\",\r\n  \"amount\": \"500\",\r\n  \"amountPerRate\": \"100\",\r\n  \"durationInMonths\": \"5\",\r\n  \"description\": \"Smatphone\",\r\n  \"startDate\": \"2025-06-01\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/installments"
+					},
+					"response": []
+				},
+				{
+					"name": "findInstallmentsNoParams",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/installments"
+					},
+					"response": []
+				},
+				{
+					"name": "findInstallmentsParams",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/users/1/bankAccounts/1/installments?description=Smartphone",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"bankAccounts",
+								"1",
+								"installments"
+							],
+							"query": [
+								{
+									"key": "description",
+									"value": "Smartphone"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findSingleInstallment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/installments/1"
+					},
+					"response": []
+				},
+				{
+					"name": "removeInstallment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNYXhNdXN0ZXJtYW5uQGdtYWlsLmNvbSIsImlhdCI6MTcyMjg2NzAyMywiZXhwIjoxNzIyOTUzNDIzfQ.mN_HkGEt-74-uYCZ0GUdZgRZdBWWmzcFlMupnAvkGlc"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"TestInstallment\",\r\n  \"amount\": \"500\",\r\n  \"amountPerRate\": \"100\",\r\n  \"durationInMonths\": \"5\",\r\n  \"description\": \"DescriptionIstOptional\",\r\n  \"startDate\": \"2025-06-01\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/bankAccounts/1/installments/4"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

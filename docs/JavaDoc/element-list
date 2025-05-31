@@ -1,0 +1,9 @@
+de.fherfurt.clevercash.api
+de.fherfurt.clevercash.api.config
+de.fherfurt.clevercash.api.controller
+de.fherfurt.clevercash.api.exceptions
+de.fherfurt.clevercash.api.mapping
+de.fherfurt.clevercash.api.models.input
+de.fherfurt.clevercash.api.models.output
+de.fherfurt.clevercash.api.service
+de.fherfurt.clevercash.api.util
