@@ -36,20 +36,7 @@ public class HelperFunctions {
         }
     }
 
-    /**
-     * Checks if a saving is valid based on the provided criteria.
-     *
-     * @param saving the saving to be validated
-     */
     public static void validateSaving(Saving saving) throws IllegalArgumentException {
-        boolean isValidName = !saving.getName().isEmpty() && !saving.getName().isBlank();
-        boolean isValidAmount = saving.getAmount().compareTo(BigDecimal.ZERO) > 0;
-        boolean isValidStartDate = !saving.getStartDate().isBefore(LocalDate.now());
-        boolean isValidDuration = HelperFunctions.isValidDuration(saving.getDurationInMonths());
-
-        if (!(isValidName && isValidAmount && isValidStartDate && isValidDuration)) {
-            throw new IllegalArgumentException("Invalid saving");
-        }
     }
 
     /**

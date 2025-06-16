@@ -1,7 +1,5 @@
 package de.fherfurt.clevercash.storage.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collections;
@@ -9,30 +7,32 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.fherfurt.clevercash.storage.util.Permission.*;
-
-@Getter
-@RequiredArgsConstructor
 public enum Role {
 
-    USER(Collections.emptySet()),
-    ADMIN(
-            Set.of(
-                    ADMIN_READ,
-                    ADMIN_UPDATE,
-                    ADMIN_DELETE,
-                    ADMIN_CREATE
-            )
-    );
+    USER (Collections.emptySet()),
+    ADMIN(Set.of(
+            Permission.ADMIN_READ,
+            Permission.ADMIN_UPDATE,
+            Permission.ADMIN_DELETE,
+            Permission.ADMIN_CREATE
+    ));
 
     private final Set<Permission> permissions;
 
+    Role(Set<Permission> permissions) {
+        this.permissions = permissions;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
     public List<SimpleGrantedAuthority> getAuthorities() {
-        var authorities = getPermissions()
-                .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+        List<SimpleGrantedAuthority> authorities = permissions.stream()
+                .map(p -> new SimpleGrantedAuthority(p.getPermission()))
                 .collect(Collectors.toList());
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + name()));
         return authorities;
     }
 }

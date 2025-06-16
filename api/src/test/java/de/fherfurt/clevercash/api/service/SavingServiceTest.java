@@ -212,7 +212,7 @@ class SavingServiceTest {
         when(bankAccountService.createOrUpdateBankAccount(bankAccount)).thenReturn(bankAccount);
 
         // act
-        Saving result = savingService.addSavingToBankAccount(user.getId(), bankAccount.getId(), newSaving);
+        savingService.addSavingToBankAccount(user.getId(), bankAccount.getId(), newSaving);
 
         // assert
         assertEquals(initialSize + 1, bankAccount.getSavings().size());
