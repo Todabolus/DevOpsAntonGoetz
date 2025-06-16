@@ -159,6 +159,27 @@
                         <outputDirectory>${project.build.directory}/target/apidocs</outputDirectory>
                     </configuration>
                 </plugin>
+
+                <!-- Checkstyle-Plugin-Eintrag -->
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.3.0</version>
+                    <configuration>
+                        <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+                        <outputFileFormat>xml</outputFileFormat>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>verify-checkstyle</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
