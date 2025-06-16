@@ -1,62 +1,54 @@
 name: Full Stack CI
 
 on:
-    push:
-        branches: ["*"]
-    pull_request:
-        paths:
-            - "backEnd/**"
+  push:
+    branches: ["*"]
+  pull_request:
+    paths:
+      - "backEnd/**"
 
 jobs:
-    #################################
-    # BACKEND
-    #################################
+  backend:
+    runs-on: ubuntu-latest
 
-    backend-setup:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - name: Set up JDK
-              uses: actions/setup-java@v3
-              with:
-                  java-version: "21"
-                  distribution: "temurin"
-            - name: Make Maven Executable
-              run: chmod +x mvnw
+    steps:
+      # 1) Repository auschecken
+      - uses: actions/checkout@v4
 
-    backend-ci:
-        needs: backend-setup
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - name: Set up JDK
-              uses: actions/setup-java@v3
-              with:
-                  java-version: "21"
-                  distribution: "temurin"
-            - name: Cache Maven packages
-              uses: actions/cache@v3
-              with:
-                  path: ~/.m2
-                  key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-maven-
-            - name: Build, Test & Lint
-              run: ./mvnw clean verify checkstyle:check
-              continue-on-error: true
+      # 2) JDK 21 einrichten
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: "21"
 
-            - name: SonarQube Scan via Maven
-              run: |
-                  ./mvnw sonar:sonar \
-                    -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY_BE }} \
-                    -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-                    -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # 3) (Optional) mvnw ausführbar machen – kann entfernt werden,
+      #    sobald das x-Bit dauerhaft im Repo gesetzt ist
+      - name: Make Maven Executable
+        run: chmod +x mvnw
 
-            - name: SonarQube Scan via Maven
-              run: |
-                  ./mvnw sonar:sonar \
-                    -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY_BE }} \
-                    -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-                    -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                    -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
+      # 4) Maven-Cache
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # 5) Build, Tests & Lint
+      - name: Build, Test & Lint
+        run: ./mvnw clean verify checkstyle:check
+        continue-on-error: true   # Tests dürfen fehlschlagen, damit Sonar trotzdem läuft
+
+      # 6) SonarQube-Analyse
+      - name: SonarQube Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./mvnw sonar:sonar \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY_BE }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
