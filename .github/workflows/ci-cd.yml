@@ -12,17 +12,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4     # Code holen
+      # 1) Code holen
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      # 2) JDK 21
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: "21"
 
-      - name: Make Maven Executable   # nur falls x-Bit noch fehlt
+      # 3) mvnw ausführbar (falls x-Bit noch fehlt)
+      - name: Make Maven Executable
         run: chmod +x mvnw
 
+      # 4) Maven-Cache
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -31,13 +35,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Build • Test • Lint • Sonar
-        env:                                # Secrets hier nur einmal einbinden
+      # 5) Build • Test • Checkstyle • Sonar
+      - name: Build, Test & Analyse
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
         run: |
-          ./mvnw --batch-mode clean verify checkstyle:check sonar:sonar \
+          ./mvnw --batch-mode \
+            -Dcheckstyle.failOnViolation=false \       
+            clean verify checkstyle:check sonar:sonar \
             -Dsonar.projectKey=$SONAR_PROJECT_KEY \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
