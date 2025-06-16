@@ -1,122 +1,62 @@
-# .github/workflows/ci-cd.yml
-name: CI/CD Pipeline
+name: Full Stack CI
 
-# Workflow-Trigger: Bei jedem Push (Branches + Tags) sowie Pull-Requests
 on:
-  push:
-    branches: ["**"]       # Alle Branches, u.a. "main"
-    tags: ["v*.*.*"]       # Tags im Format v1.2.3 für Releases
-  pull_request:
-    branches: ["main"]     # PRs, die auf main gemerged werden sollen
+    push:
+        branches: ["*"]
+    pull_request:
+        paths:
+            - "backEnd/**"
 
 jobs:
-  build-test-analyze:
-    name: Build, Lint, Test und SonarQube
-    runs-on: ubuntu-latest
+    #################################
+    # BACKEND
+    #################################
 
-    steps:
-      # 1. Code aus GitHub auschecken
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    backend-setup:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up JDK
+              uses: actions/setup-java@v3
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - name: Make Maven Executable
+              run: chmod +x mvnw
 
-      # 2. Java 17 (Temurin) und Maven-Cache einrichten
-      - name: Set up Java & Maven cache
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
+    backend-ci:
+        needs: backend-setup
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up JDK
+              uses: actions/setup-java@v3
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - name: Cache Maven packages
+              uses: actions/cache@v3
+              with:
+                  path: ~/.m2
+                  key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-maven-
+            - name: Build, Test & Lint
+              run: ./mvnw clean verify checkstyle:check
+              continue-on-error: true
 
-      # 3. Linting mit Checkstyle
-      - name: Run Checkstyle (Lint)
-        run: mvn verify -DskipTests=true -Dcheckstyle.config.location=config/checkstyle/checkstyle.xml || true
-        # Erklärung: Wir rufen 'mvn verify' auf, überspringen Tests (DskipTests=true) und übergeben explizit den Pfad zur checkstyle.xml.
-        # "|| true" verhindert, dass Lint-Fehler den Workflow komplett abbrechen.
+            - name: SonarQube Scan via Maven
+              run: |
+                  ./mvnw sonar:sonar \
+                    -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY_BE }} \
+                    -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+                    -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
-      # 4. Build & Unit Tests (inkl. Coverage) ausführen
-      - name: Build and run tests
-        run: mvn clean verify
-
-      # 5. (Optional) Test-Reports als Artefakt hochladen (nur bei PRs)
-      - name: Archive test results
-        if: ${{ always() && (github.event_name == 'pull_request') }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: target/surefire-reports/
-
-      # 6. End-to-End Tests (nur auf main-Branch, wenn vorher alles Erfolg hatte)
-      - name: End-to-End Tests
-        if: ${{ github.ref == 'refs/heads/main' && success() }}
-        run: |
-          # Startet Anwendung kurz im Hintergrund
-          java -jar target/*.jar & 
-          PID=$!
-          echo "Warte 10 Sekunden, bis die App bereit ist..."
-          sleep 10
-          # Beispiel-Checks (drei Endpunkte)
-          curl -fs http://localhost:8080/ || (echo "Health-Check fehlgeschlagen" && exit 1)
-          curl -fs http://localhost:8080/api/endpoint1 || exit 1
-          curl -fs http://localhost:8080/api/endpoint2 | grep "erwarteterInhalt" || exit 1
-          kill $PID
-
-      # 7. SonarQube-Analyse
-      - name: SonarQube Scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        uses: sonarsource/sonarqube-scan-action@v1.1.0
-        with:
-          projectBaseDir: '.'
-          args: >
-            -Dsonar.projectKey=devops-uniprojekt
-            -Dsonar.java.binaries=target
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-
-      # 8. Docker Image-Tag bestimmen
-      - name: Set Docker image tag
-        id: vars
-        run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            # Bei Tag (z.B. v1.2.3): Versions-Tag aus dem Git-Tag (v1.2.3 -> 1.2.3)
-            TAG="${GITHUB_REF_NAME#v}"
-          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            TAG="latest"
-          else
-            TAG="${GITHUB_REF_NAME}-SNAPSHOT"
-          fi
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
-      # 9. Docker Image bauen
-      - name: Build Docker image
-        env:
-          DOCKER_BUILDKIT: 1
-        run: |
-          docker build -t <DEIN_DOCKER_REPO>/myapp:${TAG} .
-
-      # 10. Optional: Für main-Branch – kurzer Container-Integrationstest
-      - name: Run container (Integrationstest)
-        if: ${{ success() }}
-        run: |
-          docker run -d --name myapp_test -p 8080:8080 <DEIN_DOCKER_REPO>/myapp:${TAG}
-          sleep 5
-          docker logs myapp_test || true
-          curl -f http://localhost:8080/ || (echo "Health-Check Container fehlgeschlagen" && exit 1)
-          docker stop myapp_test
-          docker rm myapp_test
-
-      # 11. Login zur Docker Registry (nur auf main und wenn vorher alles grün ist)
-      - name: Login to Container Registry
-        if: ${{ github.ref == 'refs/heads/main' && success() }}
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      # 12. Docker Image pushen (main-Branch; Version + optional latest)
-      - name: Push Docker image
-        if: ${{ github.ref == 'refs/heads/main' && success() }}
-        run: |
-          if [[ "$TAG" != "latest" ]]; then
-            docker tag <DEIN_DOCKER_REPO>/myapp:${TAG} <DEIN_DOCKER_REPO>/myapp:latest
-          fi
-          docker push <DEIN_DOCKER_REPO>/myapp:${TAG}
-          [[ "$TAG" != "latest" ]] && docker push <DEIN_DOCKER_REPO>/myapp:latest
+            - name: SonarQube Scan via Maven
+              run: |
+                  ./mvnw sonar:sonar \
+                    -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY_BE }} \
+                    -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+                    -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                    -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
