@@ -65,6 +65,12 @@ jobs:
         run: |
           echo "🌐 Prüfe Swagger-UI-Inhalt"
           RESPONSE=$(curl -s http://localhost:8080/swagger-ui.html)
-          echo "$RESPONSE" | grep -q "<html" \
-            || (echo "❌ Kein HTML im Response" && exit 1)
-          echo "✅ Swagger-UI liefert HTML"
+          if echo "$RESPONSE" | grep -q "<html"; then
+            echo "✅ Swagger-UI liefert HTML"
+          else
+            echo "❌ Kein HTML im Response"
+            echo "----- Swagger-UI Response Start -----"
+            echo "$RESPONSE"
+            echo "----- Swagger-UI Response Ende   -----"
+            exit 1
+          fi
