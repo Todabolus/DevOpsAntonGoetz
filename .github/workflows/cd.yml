@@ -43,20 +43,20 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/devops-github-backend:${{ env.VERSION }}
 
       - name: Warte auf erreichbaren Backend-Port
-              run: |
-                for i in {1..30}; do
-                  if nc -z localhost 8080; then
-                    echo "✅ Port 8080 erreichbar"
-                    exit 0
-                  else
-                    echo "⏳ Warte auf Port 8080… ($i/30)"
-                    sleep 2
-                  fi
-                done
-                echo "❌ Port 8080 nicht erreichbar – Logs:"
-                docker logs backend-container || true
-                docker logs postgres || true
-                exit 1
+        run: |
+          for i in {1..30}; do
+            if nc -z localhost 8080; then
+              echo "✅ Port 8080 erreichbar"
+              exit 0
+            else
+              echo "⏳ Warte auf Port 8080… ($i/30)"
+              sleep 2
+            fi
+          done
+          echo "❌ Port 8080 nicht erreichbar – Logs:"
+          docker logs backend-container || true
+          docker logs postgres || true
+          exit 1
 
       - name: Simuliere User-Registrierung
         run: |
