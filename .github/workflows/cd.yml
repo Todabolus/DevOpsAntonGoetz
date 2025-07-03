@@ -59,7 +59,7 @@ jobs:
           exit 1
 
       - name: Kurze Pause zum Starten der Anwendung
-        run: sleep 5
+        run: sleep 10
 
       - name: Prüfe Swagger-UI auf HTML-Response
         run: |
