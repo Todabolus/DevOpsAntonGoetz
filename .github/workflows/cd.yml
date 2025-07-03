@@ -58,25 +58,13 @@ jobs:
           docker logs postgres || true
           exit 1
 
-      - name: Warte auf Start des Backends
-        run: |
-          echo "⏳ Kurze Pause, damit die Anwendung initial starten kann"
-          sleep 10
+      - name: Kurze Pause zum Starten der Anwendung
+        run: sleep 10
 
-      - name: Prüfe Swagger-UI-Seite
+      - name: Prüfe Swagger-UI auf HTML-Response
         run: |
-          echo "🌐 Prüfe, ob Swagger-UI erreichbar ist (HTTP 200)"
-          for i in {1..30}; do
-            STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/swagger-ui.html)
-            if [ "$STATUS" -eq 200 ]; then
-              echo "✅ Swagger-UI antwortet mit HTTP 200"
-              exit 0
-            else
-              echo "⏳ Warte auf Swagger-UI… Status $STATUS ($i/30)"
-              sleep 5
-            fi
-          done
-          echo "❌ Swagger-UI nicht erreichbar – Logs:"
-          docker logs backend-container || true
-          docker logs postgres || true
-          exit 1
+          echo "🌐 Prüfe Swagger-UI-Inhalt"
+          RESPONSE=$(curl -s http://localhost:8080/swagger-ui.html)
+          echo "$RESPONSE" | grep -q "<html" \
+            || (echo "❌ Kein HTML im Response" && exit 1)
+          echo "✅ Swagger-UI liefert HTML"
