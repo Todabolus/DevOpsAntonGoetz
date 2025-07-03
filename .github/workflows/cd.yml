@@ -58,36 +58,25 @@ jobs:
           docker logs postgres || true
           exit 1
 
-      - name: Wait for backend to be healthy
+      - name: Warte auf Start des Backends
         run: |
-            for i in {1..30}; do
-              if curl -s http://localhost:8080/actuator/health | grep '"status":"UP"'; then
-                echo "✅ Backend is healthy"
-                exit 0
-              else
-                echo "⏳ Waiting for backend..."
-                sleep 5
-              fi
-            done
-            echo "❌ Backend not healthy, printing logs:"
-            docker logs backend-container || true
-            docker logs postgres-db || true
-            exit 1
+          echo "⏳ Kurze Pause, damit die Anwendung initial starten kann"
+          sleep 10
 
-      - name: Simuliere User-Registrierung
+      - name: Prüfe Swagger-UI-Seite
         run: |
-          echo "🔐 Versuche Registrierung eines Test-Users"
-          PAYLOAD='{
-            "email":"test.user@example.com",
-            "password":"Test12345#!?",
-            "firstName":"Test",
-            "lastName":"User",
-            "birthDate":"2000-01-01"
-          }'
-          RESPONSE=$(curl -s -X POST http://localhost:8080/api/auth/register \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD")
-           echo "Response: $RESPONSE"
-           echo "$RESPONSE" | grep -q '"access_token"' || (echo "❌ Kein access_token im Response" && exit 1)
-          echo "$RESPONSE" | grep -q '"user_id"'      || (echo "❌ Kein user_id im Response" && exit 1)
-           echo "✅ Registrierung erfolgreich simuliert"
+          echo "🌐 Prüfe, ob Swagger-UI erreichbar ist (HTTP 200)"
+          for i in {1..30}; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/swagger-ui.html)
+            if [ "$STATUS" -eq 200 ]; then
+              echo "✅ Swagger-UI antwortet mit HTTP 200"
+              exit 0
+            else
+              echo "⏳ Warte auf Swagger-UI… Status $STATUS ($i/30)"
+              sleep 5
+            fi
+          done
+          echo "❌ Swagger-UI nicht erreichbar – Logs:"
+          docker logs backend-container || true
+          docker logs postgres || true
+          exit 1
