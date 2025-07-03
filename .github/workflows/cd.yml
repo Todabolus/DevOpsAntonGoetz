@@ -1,0 +1,59 @@
+name: CleverCash Backend CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Docker-Image Version (SHA oder Tag)"
+        required: true
+        type: string
+        default: "latest"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setze VERSION aus Input
+        run: echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
+      - name: Login bei Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Erstelle Docker-Network
+        run: docker network create spring-cloud-network
+
+      - name: Starte PostgreSQL-Container
+        run: |
+          docker run -d --name postgres --network spring-cloud-network \
+            -e POSTGRES_DB=CleverCashDB \
+            -e POSTGRES_USER=admin \
+            -e POSTGRES_PASSWORD=admin \
+            postgres:15.3
+
+      - name: Starte Backend-Container
+        run: |
+          docker run -d --name backend-container --network spring-cloud-network -p 8080:8080 \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/CleverCashDB \
+            -e SPRING_DATASOURCE_USERNAME=admin \
+            -e SPRING_DATASOURCE_PASSWORD=admin \
+            ${{ secrets.DOCKER_USERNAME }}/clevercash-backend:${{ env.VERSION }}
+
+      - name: Warte auf gesunden Backend-Service
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:8080/actuator/health | grep '"status":"UP"'; then
+              echo "✅ Backend ist gesund"
+              exit 0
+            else
+              echo "⏳ Warte auf Backend… ($i/30)"
+              sleep 5
+            fi
+          done
+          echo "❌ Backend wurde nicht gesund – Logs:"
+          docker logs backend-container || true
+          docker logs postgres || true
+          exit 1
