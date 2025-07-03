@@ -54,6 +54,10 @@ jobs:
               with:
                   java-version: "21"
                   distribution: "temurin"
+
+            - name: Make Maven executable   # falls x-Bit noch fehlt
+              run: chmod +x mvnw
+
             - name: Build JAR
               run: ./mvnw clean package -DskipTests
 
