@@ -40,7 +40,7 @@ jobs:
             -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/CleverCashDB \
             -e SPRING_DATASOURCE_USERNAME=admin \
             -e SPRING_DATASOURCE_PASSWORD=admin \
-            ${{ secrets.DOCKER_USERNAME }}/clevercash-backend:${{ env.VERSION }}
+            ${{ secrets.DOCKER_USERNAME }}/devops-github-backend:${{ env.VERSION }}
 
       - name: Warte auf gesunden Backend-Service
         run: |
