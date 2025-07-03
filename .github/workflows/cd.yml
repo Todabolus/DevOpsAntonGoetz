@@ -58,9 +58,6 @@ jobs:
           docker logs postgres || true
           exit 1
 
-      - name: Kurze Pause zum Starten der Anwendung
-        run: sleep 30
-
       - name: Prüfe Swagger-UI auf HTML-Response
         run: |
           echo "🌐 Prüfe Swagger-UI-Inhalt"
