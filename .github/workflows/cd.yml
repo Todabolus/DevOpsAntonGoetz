@@ -42,18 +42,36 @@ jobs:
             -e SPRING_DATASOURCE_PASSWORD=admin \
             ${{ secrets.DOCKER_USERNAME }}/devops-github-backend:${{ env.VERSION }}
 
-      - name: Warte auf gesunden Backend-Service
+      - name: Warte auf erreichbaren Backend-Port
+              run: |
+                for i in {1..30}; do
+                  if nc -z localhost 8080; then
+                    echo "✅ Port 8080 erreichbar"
+                    exit 0
+                  else
+                    echo "⏳ Warte auf Port 8080… ($i/30)"
+                    sleep 2
+                  fi
+                done
+                echo "❌ Port 8080 nicht erreichbar – Logs:"
+                docker logs backend-container || true
+                docker logs postgres || true
+                exit 1
+
+      - name: Simuliere User-Registrierung
         run: |
-          for i in {1..30}; do
-            if curl -s http://localhost:8080/actuator/health | grep '"status":"UP"'; then
-              echo "✅ Backend ist gesund"
-              exit 0
-            else
-              echo "⏳ Warte auf Backend… ($i/30)"
-              sleep 5
-            fi
-          done
-          echo "❌ Backend wurde nicht gesund – Logs:"
-          docker logs backend-container || true
-          docker logs postgres || true
-          exit 1
+          echo "🔐 Versuche Registrierung eines Test-Users"
+          PAYLOAD='{
+            "email":"test.user@example.com",
+            "password":"Test12345#!?",
+            "firstName":"Test",
+            "lastName":"User",
+            "birthDate":"2000-01-01"
+          }'
+          RESPONSE=$(curl -s -X POST http://localhost:8080/api/auth/register \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+           echo "Response: $RESPONSE"
+           echo "$RESPONSE" | grep -q '"access_token"' || (echo "❌ Kein access_token im Response" && exit 1)
+          echo "$RESPONSE" | grep -q '"user_id"'      || (echo "❌ Kein user_id im Response" && exit 1)
+           echo "✅ Registrierung erfolgreich simuliert"
