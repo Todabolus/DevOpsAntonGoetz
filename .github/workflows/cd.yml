@@ -58,6 +58,22 @@ jobs:
           docker logs postgres || true
           exit 1
 
+      - name: Wait for backend to be healthy
+        run: |
+            for i in {1..30}; do
+              if curl -s http://localhost:8080/actuator/health | grep '"status":"UP"'; then
+                echo "✅ Backend is healthy"
+                exit 0
+              else
+                echo "⏳ Waiting for backend..."
+                sleep 5
+              fi
+            done
+            echo "❌ Backend not healthy, printing logs:"
+            docker logs backend-container || true
+            docker logs postgres-db || true
+            exit 1
+
       - name: Simuliere User-Registrierung
         run: |
           echo "🔐 Versuche Registrierung eines Test-Users"

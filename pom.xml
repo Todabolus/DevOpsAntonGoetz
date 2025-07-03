@@ -37,6 +37,10 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+            </dependency>
+            <dependency>
                 <groupId>de.fherfurt.clevercash</groupId>
                 <artifactId>storage</artifactId>
                 <version>${project.version}</version>
